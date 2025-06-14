@@ -1,0 +1,20 @@
+# Firefox extension development
+web-ext-artifacts/
+*.xpi
+*.zip
+
+# Development profiles
+dev-profile/
+
+# Node modules (if using web-ext)
+node_modules/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Editor files
+.vscode/
+.idea/
+*.swp
+*.swo

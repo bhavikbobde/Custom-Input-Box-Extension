@@ -1,4 +1,4 @@
-# Smart Input Box - Chrome Extension
+# Smart Input Box - Firefox Extension
 
 A focus-friendly typing experience that lets you interact with input fields through a floating textbox rather than scrolling to boxes anchored at the page bottom.
 
@@ -10,7 +10,7 @@ A focus-friendly typing experience that lets you interact with input fields thro
 - **Position Presets**: Choose between top bar or center popup layouts
 - **Site Memory**: Remembers your position preference for each website
 
-### 🤖 Advanced Features (AI-Powered)
+### 🤖 Advanced Features (AI-Powered by Google Gemini)
 - **CSS Layout Improvements**: AI analyzes the page and suggests CSS tweaks for better readability
 - **Text Summarization**: Automatically summarize long text inputs
 - **Smart Context**: Understands page content to provide relevant suggestions
@@ -22,16 +22,16 @@ A focus-friendly typing experience that lets you interact with input fields thro
 
 ## Installation
 
-### From Chrome Web Store
-1. Visit the Chrome Web Store (coming soon)
-2. Click "Add to Chrome"
-3. Grant necessary permissions
+### From Browser Stores
+- **Firefox Add-ons**: Coming soon
 
 ### Manual Installation (Development)
+
 1. Clone this repository
-2. Open Chrome and go to `chrome://extensions/`
-3. Enable "Developer mode"
-4. Click "Load unpacked" and select the extension folder
+2. Open Firefox and go to `about:debugging`
+3. Click "This Firefox"
+4. Click "Load Temporary Add-on"
+5. Select `manifest.json` from the project root folder
 
 ## Usage
 
@@ -42,9 +42,10 @@ A focus-friendly typing experience that lets you interact with input fields thro
 4. Press `Esc` or click outside to dismiss
 
 ### Advanced Usage (AI Mode)
-1. Set your OpenAI API key in the extension popup
-2. Switch to "Advanced" mode
-3. Use additional features:
+1. Get a free Google Gemini API key from [Google AI Studio](https://aistudio.google.com/app/apikey)
+2. Enter your API key in the extension popup
+3. Switch to "Advanced" mode
+4. Use additional features:
    - Click "Fix CSS" to improve page layout
    - Press `Ctrl+Shift+S` to summarize long text inputs
 
@@ -57,7 +58,7 @@ A focus-friendly typing experience that lets you interact with input fields thro
 | `Ctrl+Shift+S` | Summarize inputs (Advanced mode only) |
 | `Esc` | Close floating box |
 
-*Note: Shortcuts can be customized in Chrome's Extensions settings*
+*Note: Shortcuts can be customized in Firefox's Add-ons Manager*
 
 ## Configuration
 
@@ -65,36 +66,40 @@ A focus-friendly typing experience that lets you interact with input fields thro
 Click the extension icon to access:
 - **Mode Selection**: Choose between Habit and Advanced modes
 - **Position**: Select top bar or center popup
-- **API Key**: Enter your OpenAI API key for AI features
+- **API Key**: Enter your Google Gemini API key for AI features
 - **Status**: View current site info and active inputs
 
 ### Privacy & Security
 - API key stored securely in local browser storage
-- No data synced to external servers (except OpenAI for AI features)
+- No data synced to external servers (except Google Gemini for AI features)
 - HTML content never permanently stored
 - All processing happens locally
 
 ## API Key Setup (for Advanced Features)
 
-1. Visit [OpenAI's website](https://platform.openai.com/)
-2. Create an account and generate an API key
-3. Open the Smart Input Box settings
-4. Paste your API key in the "OpenAI API Key" field
-5. Switch to "Advanced" mode to enable AI features
+1. Visit [Google AI Studio](https://aistudio.google.com/app/apikey)
+2. Sign in with your Google account
+3. Click "Create API Key" and copy it
+4. Open the Smart Input Box settings
+5. Paste your API key in the "Google Gemini API Key" field
+6. Switch to "Advanced" mode to enable AI features
+
+**Note**: Gemini API is free with generous usage limits, making it more accessible than paid alternatives.
 
 ## Technical Details
 
 ### Architecture
-- **Manifest V3**: Modern Chrome extension standards
+- **Manifest V2**: Firefox extension standards
 - **Content Script**: Handles DOM manipulation and input detection
 - **Background Script**: Manages API calls and shortcuts
 - **Popup Interface**: User-friendly settings panel
 
 ### Compatibility
-- Works with standard HTML input and textarea elements
-- Supports dynamically created inputs (via MutationObserver)
-- Compatible with contenteditable elements
-- Tested on major websites (Gmail, Reddit, YouTube, etc.)
+- **Browser**: Firefox (all recent versions)
+- **Input Types**: Standard HTML input and textarea elements
+- **Dynamic Content**: Supports dynamically created inputs (via MutationObserver)
+- **Rich Text**: Compatible with contenteditable elements
+- **Websites**: Tested on major websites (Gmail, Reddit, YouTube, etc.)
 
 ## Development
 
@@ -113,7 +118,7 @@ smart-input-box/
 ```
 
 ### Building
-No build process required - this is a vanilla JavaScript extension.
+No build process required - this is a vanilla JavaScript Firefox extension.
 
 ### Testing
 1. Load the extension in developer mode

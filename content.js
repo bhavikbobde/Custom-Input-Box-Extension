@@ -1,4 +1,4 @@
-// Content script for Smart Input Box extension
+// Content script for Smart Input Box Firefox extension
 
 class SmartInputBox {
   constructor() {
@@ -46,7 +46,7 @@ class SmartInputBox {
   }
 
   async loadSettings() {
-    const result = await chrome.storage.local.get([
+    const result = await browser.storage.local.get([
       "enabled",
       "mode",
       "position",
@@ -94,31 +94,33 @@ class SmartInputBox {
   }
 
   setupMessageListener() {
-    chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-      switch (request.action) {
-        case "modeChanged":
-          this.mode = request.mode;
-          this.updateFloatingBox();
-          break;
-        case "toggleFloatingBox":
-          this.toggleFloatingBox();
-          break;
-        case "getInputsForSummary":
-          this.getInputsForSummary();
-          break;
-        case "showError":
-          this.showNotification(request.message, "error");
-          break;
-        case "getInputCount":
-          const inputCount =
-            document.querySelectorAll("input, textarea").length;
-          sendResponse({ count: inputCount });
-          break;
-        case "settingsChanged":
-          this.loadSettings();
-          break;
+    browser.runtime.onMessage.addListener(
+      (request, sender, sendResponse) => {
+        switch (request.action) {
+          case "modeChanged":
+            this.mode = request.mode;
+            this.updateFloatingBox();
+            break;
+          case "toggleFloatingBox":
+            this.toggleFloatingBox();
+            break;
+          case "getInputsForSummary":
+            this.getInputsForSummary();
+            break;
+          case "showError":
+            this.showNotification(request.message, "error");
+            break;
+          case "getInputCount":
+            const inputCount =
+              document.querySelectorAll("input, textarea").length;
+            sendResponse({ count: inputCount });
+            break;
+          case "settingsChanged":
+            this.loadSettings();
+            break;
+        }
       }
-    });
+    );
   }
 
   handleFocusIn(event) {
@@ -362,7 +364,7 @@ class SmartInputBox {
     this.position = this.position === "top" ? "center" : "top";
 
     // Save site-specific preference
-    chrome.runtime.sendMessage({
+    browser.runtime.sendMessage({
       action: "updateSiteSettings",
       url: window.location.href,
       settings: { position: this.position },
@@ -377,12 +379,12 @@ class SmartInputBox {
   async applyCSSFix() {
     if (this.mode !== "advanced") return;
 
-    this.showNotification("Generating CSS improvements...", "info");
+    this.showNotification("Generating CSS improvements with Gemini...", "info");
 
     // Get page HTML (simplified)
     const html = document.documentElement.outerHTML.substring(0, 10000); // Limit size
 
-    chrome.runtime.sendMessage(
+    browser.runtime.sendMessage(
       {
         action: "llmRequest",
         html: html,
@@ -473,9 +475,9 @@ class SmartInputBox {
       return;
     }
 
-    this.showNotification("Generating summary...", "info");
+    this.showNotification("Generating summary with Gemini...", "info");
 
-    chrome.runtime.sendMessage(
+    browser.runtime.sendMessage(
       {
         action: "summarizeText",
         text: inputs,

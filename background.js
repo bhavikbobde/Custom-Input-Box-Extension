@@ -1,13 +1,13 @@
-// Background service worker for Smart Input Box extension
+// Background script for Smart Input Box Firefox extension
 
 // Initialize extension
-chrome.runtime.onInstalled.addListener(() => {
+browser.runtime.onInstalled.addListener(() => {
   // Set default settings
-  chrome.storage.local.set({
+  browser.storage.local.set({
     mode: "habit", // 'habit' or 'advanced'
     position: "top", // 'top' or 'center'
     enabled: true,
-    apiKey: "",
+    geminiApiKey: "",
     siteSettings: {},
   });
 
@@ -16,8 +16,9 @@ chrome.runtime.onInstalled.addListener(() => {
 });
 
 // Handle keyboard shortcuts
-chrome.commands.onCommand.addListener(async (command) => {
-  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+browser.commands.onCommand.addListener(async (command) => {
+  let tabs = await browser.tabs.query({ active: true, currentWindow: true });
+  const tab = tabs[0];
 
   switch (command) {
     case "toggle-mode":
@@ -34,14 +35,14 @@ chrome.commands.onCommand.addListener(async (command) => {
 
 // Toggle between Habit and Advanced mode
 async function toggleMode(tabId) {
-  const result = await chrome.storage.local.get(["mode"]);
+  const result = await browser.storage.local.get(["mode"]);
   const newMode = result.mode === "habit" ? "advanced" : "habit";
 
-  await chrome.storage.local.set({ mode: newMode });
+  await browser.storage.local.set({ mode: newMode });
   updateBadge(newMode);
 
   // Notify content script
-  chrome.tabs.sendMessage(tabId, {
+  browser.tabs.sendMessage(tabId, {
     action: "modeChanged",
     mode: newMode,
   });
@@ -49,141 +50,159 @@ async function toggleMode(tabId) {
 
 // Toggle floating box visibility
 async function toggleFloatingBox(tabId) {
-  chrome.tabs.sendMessage(tabId, {
+  browser.tabs.sendMessage(tabId, {
     action: "toggleFloatingBox",
   });
 }
 
-// Summarize inputs using LLM
+// Summarize inputs using Gemini
 async function summarizeInputs(tabId) {
-  const result = await chrome.storage.local.get(["apiKey", "mode"]);
+  const result = await browser.storage.local.get(["geminiApiKey", "mode"]);
 
-  if (result.mode !== "advanced" || !result.apiKey) {
-    chrome.tabs.sendMessage(tabId, {
+  if (result.mode !== "advanced" || !result.geminiApiKey) {
+    browser.tabs.sendMessage(tabId, {
       action: "showError",
-      message: "LLM features require Advanced mode and API key",
+      message: "AI features require Advanced mode and Gemini API key",
     });
     return;
   }
 
   // Get inputs from content script
-  chrome.tabs.sendMessage(tabId, {
+  browser.tabs.sendMessage(tabId, {
     action: "getInputsForSummary",
   });
 }
 
 // Handle messages from content script
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "llmRequest") {
-    handleLLMRequest(request, sendResponse);
+    handleGeminiRequest(request, sendResponse);
     return true; // Keep message channel open for async response
   } else if (request.action === "summarizeText") {
-    handleSummarizeRequest(request, sendResponse);
+    handleGeminiSummarizeRequest(request, sendResponse);
     return true;
   } else if (request.action === "updateSiteSettings") {
     updateSiteSettings(request.url, request.settings);
   }
 });
 
-// Handle LLM CSS generation request
-async function handleLLMRequest(request, sendResponse) {
-  const result = await chrome.storage.local.get(["apiKey"]);
+// Handle Gemini CSS generation request
+async function handleGeminiRequest(request, sendResponse) {
+  const result = await browser.storage.local.get(["geminiApiKey"]);
 
-  if (!result.apiKey) {
-    sendResponse({ error: "No API key configured" });
+  if (!result.geminiApiKey) {
+    sendResponse({ error: "No Gemini API key configured" });
     return;
   }
 
   try {
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${result.apiKey}`,
-      },
-      body: JSON.stringify({
-        model: "gpt-3.5-turbo",
-        messages: [
-          {
-            role: "system",
-            content: `You are a CSS expert. Given HTML content, generate CSS that:
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${result.geminiApiKey}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [
+                {
+                  text: `You are a CSS expert. Given HTML content, generate CSS that:
 1. Simplifies the layout
 2. Keeps input fields visible and accessible
 3. Reduces visual clutter
 4. Maintains usability
-Return ONLY valid CSS code, no explanations.`,
+Return ONLY valid CSS code, no explanations or markdown formatting.
+
+HTML content to improve:
+${request.html}`,
+                },
+              ],
+            },
+          ],
+          generationConfig: {
+            temperature: 0.3,
+            maxOutputTokens: 1000,
           },
-          {
-            role: "user",
-            content: `Please generate CSS to improve this page layout:\n${request.html}`,
-          },
-        ],
-        max_tokens: 1000,
-        temperature: 0.3,
-      }),
-    });
+        }),
+      }
+    );
 
     const data = await response.json();
 
-    if (data.choices && data.choices[0]) {
+    if (
+      data.candidates &&
+      data.candidates[0] &&
+      data.candidates[0].content &&
+      data.candidates[0].content.parts[0]
+    ) {
       sendResponse({
         success: true,
-        css: data.choices[0].message.content.trim(),
+        css: data.candidates[0].content.parts[0].text.trim(),
       });
     } else {
-      sendResponse({ error: "Invalid response from LLM" });
+      sendResponse({ error: "Invalid response from Gemini API" });
     }
   } catch (error) {
-    sendResponse({ error: `LLM request failed: ${error.message}` });
+    sendResponse({ error: `Gemini API request failed: ${error.message}` });
   }
 }
 
-// Handle text summarization request
-async function handleSummarizeRequest(request, sendResponse) {
-  const result = await chrome.storage.local.get(["apiKey"]);
+// Handle text summarization request with Gemini
+async function handleGeminiSummarizeRequest(request, sendResponse) {
+  const result = await browser.storage.local.get(["geminiApiKey"]);
 
-  if (!result.apiKey) {
-    sendResponse({ error: "No API key configured" });
+  if (!result.geminiApiKey) {
+    sendResponse({ error: "No Gemini API key configured" });
     return;
   }
 
   try {
-    const response = await fetch("https://api.openai.com/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${result.apiKey}`,
-      },
-      body: JSON.stringify({
-        model: "gpt-3.5-turbo",
-        messages: [
-          {
-            role: "system",
-            content:
-              "Summarize the given text concisely. Keep it under 25% of the original length. Focus on key points and main ideas.",
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${result.geminiApiKey}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [
+                {
+                  text: `Summarize the following text concisely. Keep it under 25% of the original length. Focus on key points and main ideas:
+
+${request.text}`,
+                },
+              ],
+            },
+          ],
+          generationConfig: {
+            temperature: 0.3,
+            maxOutputTokens: 500,
           },
-          {
-            role: "user",
-            content: request.text,
-          },
-        ],
-        max_tokens: 500,
-        temperature: 0.3,
-      }),
-    });
+        }),
+      }
+    );
 
     const data = await response.json();
 
-    if (data.choices && data.choices[0]) {
+    if (
+      data.candidates &&
+      data.candidates[0] &&
+      data.candidates[0].content &&
+      data.candidates[0].content.parts[0]
+    ) {
       sendResponse({
         success: true,
-        summary: data.choices[0].message.content.trim(),
+        summary: data.candidates[0].content.parts[0].text.trim(),
       });
     } else {
-      sendResponse({ error: "Invalid response from LLM" });
+      sendResponse({ error: "Invalid response from Gemini API" });
     }
   } catch (error) {
-    sendResponse({ error: `Summarization failed: ${error.message}` });
+    sendResponse({ error: `Gemini API request failed: ${error.message}` });
   }
 }
 
@@ -192,17 +211,20 @@ function updateBadge(mode) {
   const text = mode === "habit" ? "H" : "A";
   const color = mode === "habit" ? "#4CAF50" : "#2196F3";
 
-  chrome.action.setBadgeText({ text });
-  chrome.action.setBadgeBackgroundColor({ color });
+  // Firefox uses browserAction
+  if (browser.browserAction && browser.browserAction.setBadgeText) {
+    browser.browserAction.setBadgeText({ text });
+    browser.browserAction.setBadgeBackgroundColor({ color });
+  }
 }
 
 // Update site-specific settings
 async function updateSiteSettings(url, settings) {
-  const result = await chrome.storage.local.get(["siteSettings"]);
+  const result = await browser.storage.local.get(["siteSettings"]);
   const siteSettings = result.siteSettings || {};
 
   const domain = new URL(url).hostname;
   siteSettings[domain] = { ...siteSettings[domain], ...settings };
 
-  await chrome.storage.local.set({ siteSettings });
+  await browser.storage.local.set({ siteSettings });
 }

@@ -62,13 +62,16 @@
       <section class="setting-section" id="advancedSettings" style="display: none;">
         <h2>AI Configuration</h2>
         <div class="input-group">
-          <label for="apiKey">OpenAI API Key</label>
+          <label for="geminiApiKey">Google Gemini API Key</label>
           <div class="api-key-container">
-            <input type="password" id="apiKey" placeholder="sk-..." autocomplete="off">
+            <input type="password" id="geminiApiKey" placeholder="AIzaSy..." autocomplete="off">
             <button id="toggleApiKey" class="toggle-visibility-btn" title="Show/Hide">👁️</button>
           </div>
           <div class="input-hint">
             Required for CSS improvements and text summarization
+          </div>
+          <div class="api-help">
+            <small><a href="https://aistudio.google.com/app/apikey" target="_blank">Get your free Gemini API key →</a></small>
           </div>
         </div>
       </section>

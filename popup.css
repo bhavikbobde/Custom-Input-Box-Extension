@@ -217,6 +217,20 @@ body {
   margin-top: 4px;
 }
 
+.api-help {
+  margin-top: 8px;
+}
+
+.api-help a {
+  color: #2196f3;
+  text-decoration: none;
+  font-size: 11px;
+}
+
+.api-help a:hover {
+  text-decoration: underline;
+}
+
 /* Shortcuts */
 .shortcuts-list {
   margin-bottom: 12px;

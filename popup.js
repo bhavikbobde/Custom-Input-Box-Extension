@@ -1,4 +1,4 @@
-// Popup script for Smart Input Box extension
+// Popup script for Smart Input Box Firefox extension
 
 class PopupManager {
   constructor() {
@@ -14,18 +14,18 @@ class PopupManager {
   }
 
   async loadSettings() {
-    this.settings = await chrome.storage.local.get([
+    this.settings = await browser.storage.local.get([
       "enabled",
       "mode",
       "position",
-      "apiKey",
+      "geminiApiKey",
     ]);
 
     // Set defaults
     this.settings.enabled = this.settings.enabled !== false;
     this.settings.mode = this.settings.mode || "habit";
     this.settings.position = this.settings.position || "top";
-    this.settings.apiKey = this.settings.apiKey || "";
+    this.settings.geminiApiKey = this.settings.geminiApiKey || "";
   }
 
   setupEventListeners() {
@@ -52,9 +52,9 @@ class PopupManager {
       this.updateSetting("position", "center");
     });
 
-    // API key handling
-    document.getElementById("apiKey").addEventListener("input", (e) => {
-      this.updateSetting("apiKey", e.target.value);
+    // Gemini API key handling
+    document.getElementById("geminiApiKey").addEventListener("input", (e) => {
+      this.updateSetting("geminiApiKey", e.target.value);
     });
 
     document.getElementById("toggleApiKey").addEventListener("click", () => {
@@ -63,7 +63,8 @@ class PopupManager {
 
     // Other buttons
     document.getElementById("openShortcuts").addEventListener("click", () => {
-      chrome.tabs.create({ url: "chrome://extensions/shortcuts" });
+      // Firefox shortcuts are managed in about:addons
+      browser.tabs.create({ url: "about:addons" });
     });
 
     document.getElementById("helpLink").addEventListener("click", (e) => {
@@ -74,19 +75,23 @@ class PopupManager {
 
   async updateSetting(key, value) {
     this.settings[key] = value;
-    await chrome.storage.local.set({ [key]: value });
+    await browser.storage.local.set({ [key]: value });
     this.updateUI();
 
     // Notify content scripts of changes
-    const [tab] = await chrome.tabs.query({
-      active: true,
-      currentWindow: true,
-    });
-    if (tab) {
-      chrome.tabs.sendMessage(tab.id, {
-        action: "settingsChanged",
-        settings: this.settings,
+    try {
+      const [tab] = await browser.tabs.query({
+        active: true,
+        currentWindow: true,
       });
+      if (tab) {
+        browser.tabs.sendMessage(tab.id, {
+          action: "settingsChanged",
+          settings: this.settings,
+        });
+      }
+    } catch (error) {
+      console.log("Could not notify content script:", error);
     }
   }
 
@@ -121,8 +126,8 @@ class PopupManager {
       document.getElementById("centerPosition").classList.add("active");
     }
 
-    // Update API key field
-    document.getElementById("apiKey").value = this.settings.apiKey;
+    // Update Gemini API key field
+    document.getElementById("geminiApiKey").value = this.settings.geminiApiKey;
 
     // Show/hide advanced settings
     const advancedSection = document.getElementById("advancedSettings");
@@ -134,7 +139,7 @@ class PopupManager {
   }
 
   toggleApiKeyVisibility() {
-    const input = document.getElementById("apiKey");
+    const input = document.getElementById("geminiApiKey");
     const button = document.getElementById("toggleApiKey");
 
     if (input.type === "password") {
@@ -148,7 +153,7 @@ class PopupManager {
 
   async loadCurrentSite() {
     try {
-      const [tab] = await chrome.tabs.query({
+      const [tab] = await browser.tabs.query({
         active: true,
         currentWindow: true,
       });
@@ -157,7 +162,7 @@ class PopupManager {
         document.getElementById("currentSite").textContent = url.hostname;
 
         // Get input count from content script
-        chrome.tabs.sendMessage(
+        browser.tabs.sendMessage(
           tab.id,
           {
             action: "getInputCount",
@@ -206,14 +211,26 @@ class PopupManager {
         <p><span class="shortcut">Esc</span> - Close floating box</p>
         
         <h2>Advanced Features</h2>
-        <p>To use AI features, you need to provide an OpenAI API key in the settings. This enables:</p>
+        <p>To use AI features, you need to provide a Google Gemini API key in the settings. This enables:</p>
         <ul>
           <li>CSS improvements for better page layout</li>
           <li>Text summarization for long inputs</li>
         </ul>
         
+        <h2>Getting a Gemini API Key</h2>
+        <ol>
+          <li>Visit <a href="https://aistudio.google.com/app/apikey" target="_blank">Google AI Studio</a></li>
+          <li>Sign in with your Google account</li>
+          <li>Click "Create API Key"</li>
+          <li>Copy the key and paste it in the extension settings</li>
+          <li>Switch to Advanced mode to use AI features</li>
+        </ol>
+        
         <h2>Privacy</h2>
-        <p>Your API key is stored locally and never transmitted except to OpenAI's API. No HTML content is permanently stored.</p>
+        <p>Your API key is stored locally and never transmitted except to Google's Gemini API. No HTML content is permanently stored.</p>
+        
+        <h2>Keyboard Shortcuts Management</h2>
+        <p>To customize keyboard shortcuts, go to about:addons, find this extension, and click on the gear icon to access preferences.</p>
         
         <h2>Support</h2>
         <p>For issues or questions, please visit our GitHub repository or contact support.</p>
