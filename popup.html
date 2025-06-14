@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Smart Input Box Settings</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="popup-container">
+    <header class="popup-header">
+      <div class="popup-title">
+        <h1>Smart Input Box</h1>
+        <div class="mode-indicator" id="modeIndicator">Habit Mode</div>
+      </div>
+      <div class="toggle-switch">
+        <input type="checkbox" id="enabledToggle" class="toggle-input">
+        <label for="enabledToggle" class="toggle-label">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+    </header>
+
+    <main class="popup-main">
+      <!-- Mode Selection -->
+      <section class="setting-section">
+        <h2>Mode</h2>
+        <div class="mode-selector">
+          <button id="habitMode" class="mode-btn active">
+            <div class="mode-icon">📝</div>
+            <div class="mode-info">
+              <div class="mode-name">Habit</div>
+              <div class="mode-desc">Basic floating textbox</div>
+            </div>
+          </button>
+          <button id="advancedMode" class="mode-btn">
+            <div class="mode-icon">🤖</div>
+            <div class="mode-info">
+              <div class="mode-name">Advanced</div>
+              <div class="mode-desc">AI-powered features</div>
+            </div>
+          </button>
+        </div>
+      </section>
+
+      <!-- Position Settings -->
+      <section class="setting-section">
+        <h2>Position</h2>
+        <div class="position-selector">
+          <button id="topPosition" class="position-btn active">
+            <div class="position-icon">⬆️</div>
+            <span>Top Bar</span>
+          </button>
+          <button id="centerPosition" class="position-btn">
+            <div class="position-icon">🎯</div>
+            <span>Center</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- Advanced Settings -->
+      <section class="setting-section" id="advancedSettings" style="display: none;">
+        <h2>AI Configuration</h2>
+        <div class="input-group">
+          <label for="apiKey">OpenAI API Key</label>
+          <div class="api-key-container">
+            <input type="password" id="apiKey" placeholder="sk-..." autocomplete="off">
+            <button id="toggleApiKey" class="toggle-visibility-btn" title="Show/Hide">👁️</button>
+          </div>
+          <div class="input-hint">
+            Required for CSS improvements and text summarization
+          </div>
+        </div>
+      </section>
+
+      <!-- Keyboard Shortcuts -->
+      <section class="setting-section">
+        <h2>Keyboard Shortcuts</h2>
+        <div class="shortcuts-list">
+          <div class="shortcut-item">
+            <span class="shortcut-desc">Toggle Mode</span>
+            <span class="shortcut-keys">Ctrl+Shift+Y</span>
+          </div>
+          <div class="shortcut-item">
+            <span class="shortcut-desc">Show/Hide Box</span>
+            <span class="shortcut-keys">Ctrl+Shift+U</span>
+          </div>
+          <div class="shortcut-item">
+            <span class="shortcut-desc">Summarize Inputs</span>
+            <span class="shortcut-keys">Ctrl+Shift+S</span>
+          </div>
+        </div>
+        <button id="openShortcuts" class="secondary-btn">
+          Customize Shortcuts
+        </button>
+      </section>
+
+      <!-- Stats/Info -->
+      <section class="setting-section">
+        <h2>Status</h2>
+        <div class="status-grid">
+          <div class="status-item">
+            <div class="status-label">Current Site</div>
+            <div class="status-value" id="currentSite">Loading...</div>
+          </div>
+          <div class="status-item">
+            <div class="status-label">Active Inputs</div>
+            <div class="status-value" id="activeInputs">0</div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="popup-footer">
+      <div class="footer-info">
+        <span>v1.0.0</span>
+        <a href="#" id="helpLink">Help & Support</a>
+      </div>
+    </footer>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html> 

@@ -1,0 +1,259 @@
+/* Smart Input Box Extension Styles */
+
+.smart-input-floating-box {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, system-ui,
+    sans-serif;
+  font-size: 14px;
+  line-height: 1.4;
+  color: #333;
+  background: #fff;
+  border: 2px solid #2196f3;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  backdrop-filter: blur(10px);
+  overflow: hidden;
+  animation: smartInputSlideIn 0.2s ease-out;
+}
+
+@keyframes smartInputSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.smart-input-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, #2196f3, #1976d2);
+  color: white;
+  font-weight: 600;
+  user-select: none;
+}
+
+.smart-input-title {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.smart-input-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.smart-input-btn {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.smart-input-btn:hover {
+  background: rgba(255, 255, 255, 0.3);
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+.smart-input-btn:active {
+  transform: scale(0.95);
+}
+
+.smart-input-textarea {
+  width: 100%;
+  min-height: 120px;
+  max-height: 300px;
+  padding: 16px;
+  border: none;
+  outline: none;
+  resize: vertical;
+  font-family: inherit;
+  font-size: 14px;
+  line-height: 1.5;
+  background: #fff;
+  box-sizing: border-box;
+}
+
+.smart-input-textarea:focus {
+  background: #fafafa;
+}
+
+.smart-input-textarea::placeholder {
+  color: #999;
+  font-style: italic;
+}
+
+/* Summary Panel */
+.smart-input-summary-panel {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 300px;
+  max-height: 400px;
+  background: white;
+  border: 2px solid #4caf50;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  z-index: 9999998;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui,
+    sans-serif;
+  animation: smartInputSlideInRight 0.3s ease-out;
+}
+
+@keyframes smartInputSlideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.smart-input-summary-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, #4caf50, #388e3c);
+  color: white;
+  border-radius: 10px 10px 0 0;
+}
+
+.smart-input-summary-header h3 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.smart-input-summary-header button {
+  background: rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  padding: 4px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+}
+
+.smart-input-summary-content {
+  padding: 16px;
+  max-height: 300px;
+  overflow-y: auto;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #333;
+}
+
+/* Notifications */
+.smart-input-notification {
+  position: fixed;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 12px 20px;
+  border-radius: 8px;
+  color: white;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui,
+    sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  z-index: 9999997;
+  animation: smartInputNotificationIn 0.3s ease-out;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+@keyframes smartInputNotificationIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.smart-input-notification.smart-input-info {
+  background: #2196f3;
+}
+
+.smart-input-notification.smart-input-success {
+  background: #4caf50;
+}
+
+.smart-input-notification.smart-input-error {
+  background: #f44336;
+}
+
+/* Ensure floating box appears above everything */
+.smart-input-floating-box,
+.smart-input-summary-panel,
+.smart-input-notification {
+  position: fixed !important;
+  z-index: 2147483647 !important;
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .smart-input-floating-box {
+    background: #1a1a1a;
+    border-color: #2196f3;
+    color: #e0e0e0;
+  }
+
+  .smart-input-textarea {
+    background: #1a1a1a;
+    color: #e0e0e0;
+  }
+
+  .smart-input-textarea:focus {
+    background: #2a2a2a;
+  }
+
+  .smart-input-textarea::placeholder {
+    color: #666;
+  }
+
+  .smart-input-summary-panel {
+    background: #1a1a1a;
+    color: #e0e0e0;
+  }
+
+  .smart-input-summary-content {
+    color: #e0e0e0;
+  }
+}
+
+/* Responsive design */
+@media (max-width: 600px) {
+  .smart-input-floating-box {
+    min-width: 320px;
+    width: 95vw;
+    max-width: none;
+  }
+
+  .smart-input-summary-panel {
+    width: 280px;
+    right: 10px;
+  }
+
+  .smart-input-controls {
+    gap: 4px;
+  }
+
+  .smart-input-btn {
+    padding: 4px 6px;
+    font-size: 11px;
+  }
+}
