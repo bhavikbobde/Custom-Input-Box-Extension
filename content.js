@@ -17,11 +17,11 @@ class SmartInputBox {
 
   async init() {
     try {
-      console.log("🚀 Smart Input Box initializing...");
+      console.log("Smart Input Box initializing...");
 
       // Load settings
       await this.loadSettings();
-      console.log("⚙️ Settings loaded:", {
+      console.log("Settings loaded:", {
         enabled: this.isEnabled,
         mode: this.mode,
         position: this.position,
@@ -29,19 +29,19 @@ class SmartInputBox {
 
       // Set up input listeners
       this.setupInputListeners();
-      console.log("👂 Input listeners set up");
+      console.log("Input listeners set up");
 
       // Set up mutation observer for dynamic content
       this.setupMutationObserver();
-      console.log("👀 Mutation observer set up");
+      console.log("Mutation observer set up");
 
       // Listen for messages from background script
       this.setupMessageListener();
-      console.log("📨 Message listener set up");
+      console.log("Message listener set up");
 
-      console.log("✅ Smart Input Box initialized successfully");
+      console.log("Smart Input Box initialized successfully");
     } catch (error) {
-      console.error("❌ Smart Input Box initialization failed:", error);
+      console.error("Smart Input Box initialization failed:", error);
     }
   }
 
@@ -94,57 +94,55 @@ class SmartInputBox {
   }
 
   setupMessageListener() {
-    browser.runtime.onMessage.addListener(
-      (request, sender, sendResponse) => {
-        switch (request.action) {
-          case "modeChanged":
-            this.mode = request.mode;
-            this.updateFloatingBox();
-            break;
-          case "toggleFloatingBox":
-            this.toggleFloatingBox();
-            break;
-          case "getInputsForSummary":
-            this.getInputsForSummary();
-            break;
-          case "showError":
-            this.showNotification(request.message, "error");
-            break;
-          case "getInputCount":
-            const inputCount =
-              document.querySelectorAll("input, textarea").length;
-            sendResponse({ count: inputCount });
-            break;
-          case "settingsChanged":
-            this.loadSettings();
-            break;
-        }
+    browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
+      switch (request.action) {
+        case "modeChanged":
+          this.mode = request.mode;
+          this.updateFloatingBox();
+          break;
+        case "toggleFloatingBox":
+          this.toggleFloatingBox();
+          break;
+        case "getInputsForSummary":
+          this.getInputsForSummary();
+          break;
+        case "showError":
+          this.showNotification(request.message, "error");
+          break;
+        case "getInputCount":
+          const inputCount =
+            document.querySelectorAll("input, textarea").length;
+          sendResponse({ count: inputCount });
+          break;
+        case "settingsChanged":
+          this.loadSettings();
+          break;
       }
-    );
+    });
   }
 
   handleFocusIn(event) {
     const target = event.target;
 
-    console.log("🎯 Focus in:", target.tagName, target.type, target.className);
+    console.log("Focus in:", target.tagName, target.type, target.className);
 
     // Skip if it's our floating box elements
     if (target.closest(".smart-input-floating-box")) {
-      console.log("⏭️ Skipping focus - floating box element");
+      console.log("Skipping focus - floating box element");
       return;
     }
 
     if (!this.isInputElement(target)) {
-      console.log("⏭️ Skipping focus - not an input element");
+      console.log("Skipping focus - not an input element");
       return;
     }
 
     if (!this.isEnabled) {
-      console.log("⏭️ Skipping focus - extension disabled");
+      console.log("Skipping focus - extension disabled");
       return;
     }
 
-    console.log("✅ Valid input focused, showing floating box");
+    console.log("Valid input focused, showing floating box");
     this.currentInput = target;
 
     // Debounce to avoid multiple rapid calls
@@ -202,17 +200,17 @@ class SmartInputBox {
 
   showFloatingBox() {
     if (!this.currentInput) {
-      console.log("❌ Cannot show floating box - no current input");
+      console.log("Cannot show floating box - no current input");
       return;
     }
 
     // Don't create multiple boxes
     if (this.floatingBox) {
-      console.log("⏭️ Floating box already exists");
+      console.log("Floating box already exists");
       return;
     }
 
-    console.log("📦 Creating floating box...");
+    console.log("Creating floating box...");
     const startTime = performance.now();
 
     this.floatingBox = this.createFloatingBox();
@@ -223,20 +221,20 @@ class SmartInputBox {
     const currentValue = this.getInputValue(this.currentInput);
     textArea.value = currentValue;
 
-    console.log("💬 Initial value:", currentValue);
+    console.log("Initial value:", currentValue);
 
     // Small delay to ensure DOM is ready
     setTimeout(() => {
       textArea.focus();
       textArea.setSelectionRange(textArea.value.length, textArea.value.length);
-      console.log("🎯 Floating box focused");
+      console.log("Floating box focused");
     }, 10);
 
     // Set up two-way binding
     this.setupTwoWayBinding(textArea);
 
     const endTime = performance.now();
-    console.log(`✅ Floating box shown in ${endTime - startTime}ms`);
+    console.log(`Floating box shown in ${endTime - startTime}ms`);
   }
 
   createFloatingBox() {
@@ -561,28 +559,28 @@ class SmartInputBox {
 
 // Initialize when DOM is ready - with better error handling
 (function initializeSmartInputBox() {
-  console.log("🔄 DOM State:", document.readyState);
+  console.log("DOM State:", document.readyState);
 
   try {
     if (document.readyState === "loading") {
       document.addEventListener("DOMContentLoaded", () => {
-        console.log("📄 DOM Content Loaded - initializing extension");
+        console.log("DOM Content Loaded - initializing extension");
         window.smartInputBox = new SmartInputBox();
       });
     } else {
-      console.log("📄 DOM already ready - initializing extension immediately");
+      console.log("DOM already ready - initializing extension immediately");
       window.smartInputBox = new SmartInputBox();
     }
   } catch (error) {
-    console.error("💥 Failed to initialize Smart Input Box:", error);
+    console.error("Failed to initialize Smart Input Box:", error);
 
     // Retry after 1 second
     setTimeout(() => {
-      console.log("🔄 Retrying initialization...");
+      console.log("Retrying initialization...");
       try {
         window.smartInputBox = new SmartInputBox();
       } catch (retryError) {
-        console.error("💥 Retry failed:", retryError);
+        console.error("Retry failed:", retryError);
       }
     }, 1000);
   }
