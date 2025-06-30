@@ -66,8 +66,14 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "llmRequest") {
     handleGeminiRequest(request, sendResponse);
     return true;
+  } else if (request.action === "jsRequest") {
+    handleGeminiJSRequest(request, sendResponse);
+    return true;
   } else if (request.action === "summarizeText") {
     handleGeminiSummarizeRequest(request, sendResponse);
+    return true;
+  } else if (request.action === "analyzePageInputs") {
+    handleGeminiPageAnalysis(request, sendResponse);
     return true;
   } else if (request.action === "updateSiteSettings") {
     updateSiteSettings(request.url, request.settings);
@@ -84,7 +90,7 @@ async function handleGeminiRequest(request, sendResponse) {
 
   try {
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${result.geminiApiKey}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key=${result.geminiApiKey}`,
       {
         method: "POST",
         headers: {
@@ -110,7 +116,6 @@ ${request.html}`,
           ],
           generationConfig: {
             temperature: 0.3,
-            maxOutputTokens: 1000,
           },
         }),
       }
@@ -136,6 +141,75 @@ ${request.html}`,
   }
 }
 
+async function handleGeminiJSRequest(request, sendResponse) {
+  const result = await browser.storage.local.get(["geminiApiKey"]);
+
+  if (!result.geminiApiKey) {
+    sendResponse({ error: "No Gemini API key configured" });
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key=${result.geminiApiKey}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [
+                {
+                  text: `You are a JavaScript expert. Given HTML content, generate JavaScript code that:
+1. Finds all input and textarea elements
+2. Repositions them to more comfortable and accessible positions
+3. Improves the user experience by moving inputs away from distracting elements
+4. Uses modern DOM manipulation methods
+5. Avoids breaking existing functionality
+
+Generate ONLY executable JavaScript code, no explanations or markdown formatting.
+The code should be safe to execute and should not cause errors.
+
+HTML content to improve:
+${request.html}`,
+                },
+              ],
+            },
+          ],
+          generationConfig: {
+            temperature: 0.3,
+          },
+        }),
+      }
+    );
+
+    const data = await response.json();
+
+    if (
+      data.candidates &&
+      data.candidates[0] &&
+      data.candidates[0].content &&
+      data.candidates[0].content.parts[0]
+    ) {
+      let jsCode = data.candidates[0].content.parts[0].text.trim();
+
+      // Clean up the response to remove markdown formatting if present
+      jsCode = jsCode.replace(/```javascript\n?/g, "").replace(/```\n?/g, "");
+
+      sendResponse({
+        success: true,
+        js: jsCode,
+      });
+    } else {
+      sendResponse({ error: "Invalid response from Gemini API" });
+    }
+  } catch (error) {
+    sendResponse({ error: `Gemini API request failed: ${error.message}` });
+  }
+}
+
 async function handleGeminiSummarizeRequest(request, sendResponse) {
   const result = await browser.storage.local.get(["geminiApiKey"]);
 
@@ -146,7 +220,7 @@ async function handleGeminiSummarizeRequest(request, sendResponse) {
 
   try {
     const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${result.geminiApiKey}`,
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key=${result.geminiApiKey}`,
       {
         method: "POST",
         headers: {
@@ -166,7 +240,6 @@ ${request.text}`,
           ],
           generationConfig: {
             temperature: 0.3,
-            maxOutputTokens: 500,
           },
         }),
       }
@@ -183,6 +256,71 @@ ${request.text}`,
       sendResponse({
         success: true,
         summary: data.candidates[0].content.parts[0].text.trim(),
+      });
+    } else {
+      sendResponse({ error: "Invalid response from Gemini API" });
+    }
+  } catch (error) {
+    sendResponse({ error: `Gemini API request failed: ${error.message}` });
+  }
+}
+
+async function handleGeminiPageAnalysis(request, sendResponse) {
+  const result = await browser.storage.local.get(["geminiApiKey"]);
+
+  if (!result.geminiApiKey) {
+    sendResponse({ error: "No Gemini API key configured" });
+    return;
+  }
+
+  try {
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key=${result.geminiApiKey}`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          contents: [
+            {
+              parts: [
+                {
+                  text: `You are a web page analyzer expert. Analyze the following HTML content and provide a CONCISE summary of all input fields, forms, and interactive elements on the page.
+
+Please provide a brief, organized summary that includes:
+1. **Input Fields**: List the main input types (text, email, password, etc.) with their purpose
+2. **Forms**: Identify what each form is for (login, signup, contact, etc.)
+3. **Page Purpose**: What is this page trying to collect or do?
+
+Keep the response under 200 words and use clear headings. Focus on the most important elements only.
+
+URL: ${request.url}
+
+HTML content to analyze:
+${request.html}`,
+                },
+              ],
+            },
+          ],
+          generationConfig: {
+            temperature: 0.3,
+          },
+        }),
+      }
+    );
+
+    const data = await response.json();
+
+    if (
+      data.candidates &&
+      data.candidates[0] &&
+      data.candidates[0].content &&
+      data.candidates[0].content.parts[0]
+    ) {
+      sendResponse({
+        success: true,
+        analysis: data.candidates[0].content.parts[0].text.trim(),
       });
     } else {
       sendResponse({ error: "Invalid response from Gemini API" });

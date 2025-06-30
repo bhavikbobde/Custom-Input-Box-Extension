@@ -195,6 +195,409 @@
   font-size: 13px;
 }
 
+.smart-input-button-container {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.smart-input-api-container {
+  margin-bottom: 16px;
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.02);
+}
+
+.smart-input-api-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.smart-input-api-label {
+  font-size: 12px;
+  color: #e0e0e0;
+  font-weight: 500;
+}
+
+.smart-input-api-input-wrapper {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+}
+
+.smart-input-api-input {
+  flex: 1;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 6px;
+  color: #e0e0e0;
+  font-size: 14px;
+  outline: none;
+  font-family: inherit;
+  transition: all 0.2s ease;
+}
+
+.smart-input-api-input:focus {
+  border-color: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 0 0 2px rgba(79, 209, 197, 0.1);
+}
+
+.smart-input-api-input::placeholder {
+  color: #666;
+  font-style: italic;
+  font-size: 13px;
+}
+
+.smart-input-api-save-btn {
+  padding: 10px 16px;
+  background: #4caf50;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.smart-input-api-save-btn:hover {
+  background: #45a049;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.smart-input-api-help {
+  font-size: 11px;
+  text-align: center;
+  margin-top: 8px;
+}
+
+.smart-input-api-help a {
+  color: #4caf50;
+  text-decoration: none;
+}
+
+.smart-input-api-help a:hover {
+  text-decoration: underline;
+}
+
+.smart-input-api-button {
+  display: flex;
+  align-items: center;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  justify-content: space-between;
+}
+
+.smart-input-api-button:hover {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.15);
+}
+
+.smart-input-api-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  min-width: 0;
+}
+
+.smart-input-api-content .api-icon {
+  font-size: 16px;
+  width: 20px;
+  text-align: center;
+  flex-shrink: 0;
+  color: #ccc;
+}
+
+.smart-input-api-content svg.api-icon {
+  width: 16px;
+  height: 16px;
+  stroke: #ccc;
+  flex-shrink: 0;
+}
+
+.smart-input-api-display {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: #e0e0e0;
+  font-size: 14px;
+  font-family: monospace;
+  outline: none;
+  min-width: 0;
+  cursor: default;
+}
+
+.smart-input-api-display:not([readonly]) {
+  cursor: text;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  padding: 4px 8px;
+}
+
+.smart-input-api-display:not([readonly]):focus {
+  border-color: rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.smart-input-api-actions {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.smart-input-api-action-btn {
+  width: 28px;
+  height: 28px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  color: #ccc;
+}
+
+.smart-input-api-action-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.smart-input-api-action-btn[data-action="delete-api"]:hover {
+  background: rgba(255, 0, 0, 0.1);
+  border-color: rgba(255, 0, 0, 0.3);
+  color: #ff6666;
+}
+
+.smart-input-api-status {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.smart-input-api-key {
+  font-size: 11px;
+  color: #ccc;
+  font-family: monospace;
+}
+
+.smart-input-api-delete-btn {
+  padding: 4px 8px;
+  background: transparent;
+  border: 1px solid rgba(255, 0, 0, 0.3);
+  border-radius: 3px;
+  color: #ff6666;
+  font-size: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.smart-input-api-delete-btn:hover {
+  background: rgba(255, 0, 0, 0.1);
+  border-color: rgba(255, 0, 0, 0.5);
+}
+
+.smart-input-action-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  color: #e0e0e0;
+  font-family: inherit;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  outline: none;
+  text-align: left;
+  justify-content: space-between;
+  position: relative;
+}
+
+.smart-input-btn-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+}
+
+.smart-input-action-btn:hover:not(:disabled) {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  transform: translateY(-1px);
+}
+
+.smart-input-action-btn:active:not(:disabled) {
+  transform: translateY(0);
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.smart-input-action-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.smart-input-action-btn.disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.smart-input-action-btn.loading {
+  opacity: 0.8;
+  cursor: wait;
+}
+
+.smart-input-action-btn .btn-icon {
+  font-size: 16px;
+  width: 20px;
+  text-align: center;
+  flex-shrink: 0;
+  color: #ccc;
+}
+
+.smart-input-action-btn svg.btn-icon {
+  width: 20px;
+  height: 20px;
+  stroke-width: 2;
+}
+
+.smart-input-action-btn .btn-text {
+  flex: 1;
+}
+
+.smart-input-btn-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-top: 2px solid #888;
+  border-radius: 50%;
+  animation: smartInputBtnSpin 1s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes smartInputBtnSpin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+.smart-input-analysis-result {
+  margin-top: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.02);
+  overflow: hidden;
+}
+
+.smart-input-analysis-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.smart-input-analysis-header h4 {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 500;
+  color: #e0e0e0;
+}
+
+.smart-input-analysis-close {
+  background: transparent;
+  border: none;
+  color: #888;
+  padding: 2px 6px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.2s ease;
+  border-radius: 3px;
+}
+
+.smart-input-analysis-close:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.smart-input-analysis-content {
+  padding: 12px;
+  max-height: 300px;
+  overflow-y: auto;
+  font-size: 13px;
+  line-height: 1.4;
+  color: #ccc;
+}
+
+.smart-input-analysis-content h4 {
+  margin: 8px 0 4px 0;
+  font-size: 14px;
+  color: #e0e0e0;
+  font-weight: 500;
+}
+
+.smart-input-analysis-content h5 {
+  margin: 6px 0 3px 0;
+  font-size: 13px;
+  color: #d0d0d0;
+  font-weight: 500;
+}
+
+.smart-input-analysis-content h6 {
+  margin: 4px 0 2px 0;
+  font-size: 12px;
+  color: #c0c0c0;
+  font-weight: 500;
+}
+
+.smart-input-analysis-content p {
+  margin: 6px 0;
+}
+
+.smart-input-analysis-content ul,
+.smart-input-analysis-content ol {
+  margin: 6px 0 6px 16px;
+  padding: 0;
+}
+
+.smart-input-analysis-content li {
+  margin: 2px 0;
+}
+
+.smart-input-analysis-content strong {
+  color: #f0f0f0;
+  font-weight: 600;
+}
+
+.smart-input-analysis-content em {
+  color: #e0e0e0;
+  font-style: italic;
+}
+
 .smart-input-summary-panel {
   position: fixed;
   top: 20px;
@@ -368,4 +771,153 @@
     width: 18px;
     height: 18px;
   }
+
+  .smart-input-action-btn {
+    padding: 12px;
+    font-size: 13px;
+  }
+
+  .smart-input-action-btn .btn-icon {
+    font-size: 14px;
+    width: 18px;
+  }
+
+  .smart-input-button-container {
+    gap: 10px;
+  }
+
+  .smart-input-btn-spinner {
+    width: 14px;
+    height: 14px;
+    border-width: 1.5px;
+  }
+
+  .smart-input-analysis-result {
+    margin-top: 12px;
+  }
+
+  .smart-input-analysis-header {
+    padding: 8px 10px;
+  }
+
+  .smart-input-analysis-header h4 {
+    font-size: 12px;
+  }
+
+  .smart-input-analysis-close {
+    font-size: 12px;
+    padding: 1px 4px;
+  }
+
+  .smart-input-analysis-content {
+    padding: 10px;
+    max-height: 200px;
+    font-size: 12px;
+  }
+
+  .smart-input-analysis-content h4 {
+    font-size: 13px;
+  }
+
+  .smart-input-analysis-content h5 {
+    font-size: 12px;
+  }
+
+  .smart-input-analysis-content h6 {
+    font-size: 11px;
+  }
+
+  .smart-input-api-container {
+    margin-bottom: 12px;
+    padding: 10px;
+  }
+
+  .smart-input-api-button {
+    padding: 12px;
+  }
+
+  .smart-input-api-content .api-icon {
+    font-size: 14px;
+    width: 18px;
+  }
+
+  .smart-input-api-display {
+    font-size: 12px;
+  }
+
+  .smart-input-api-actions {
+    gap: 4px;
+  }
+
+  .smart-input-api-action-btn {
+    width: 24px;
+    height: 24px;
+    font-size: 11px;
+  }
+
+  .smart-input-api-input-wrapper {
+    gap: 10px;
+  }
+
+  .smart-input-api-input {
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+
+  .smart-input-api-save-btn {
+    padding: 8px 14px;
+    font-size: 11px;
+  }
+
+  .smart-input-api-help {
+    font-size: 10px;
+    margin-top: 6px;
+  }
+
+  .smart-input-api-key {
+    font-size: 10px;
+  }
+
+  .smart-input-api-delete-btn {
+    padding: 3px 6px;
+    font-size: 9px;
+  }
+
+  .smart-input-api-action-btn svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .smart-input-api-label svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .smart-input-action-btn svg.btn-icon {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.smart-input-api-action-btn svg {
+  stroke: #ccc;
+  transition: stroke 0.2s ease;
+}
+
+.smart-input-api-action-btn:hover svg {
+  stroke: #fff;
+}
+
+.smart-input-api-action-btn[data-action="delete-api"]:hover svg {
+  stroke: #ff6666;
+}
+
+.smart-input-api-label svg {
+  stroke: #e0e0e0;
+  margin-right: 6px;
+  vertical-align: -2px;
+}
+
+.smart-input-analysis-header svg {
+  stroke: #e0e0e0;
 }
