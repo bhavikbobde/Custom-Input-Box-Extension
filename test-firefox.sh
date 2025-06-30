@@ -3,13 +3,11 @@
 echo "🦊 Testing Smart Input Box Firefox Extension"
 echo "============================================="
 
-# Check if Firefox is installed
 if ! command -v firefox &> /dev/null; then
     echo "❌ Firefox not found. Please install Firefox first."
     exit 1
 fi
 
-# Check if web-ext is installed
 if ! command -v web-ext &> /dev/null; then
     echo "📦 web-ext not found. Installing..."
     npm install -g web-ext

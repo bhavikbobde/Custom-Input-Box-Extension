@@ -1,5 +1,3 @@
-// Popup script for Smart Input Box Firefox extension
-
 class PopupManager {
   constructor() {
     this.settings = {};
@@ -21,7 +19,6 @@ class PopupManager {
       "geminiApiKey",
     ]);
 
-    // Set defaults
     this.settings.enabled = this.settings.enabled !== false;
     this.settings.mode = this.settings.mode || "habit";
     this.settings.position = this.settings.position || "top";
@@ -29,12 +26,10 @@ class PopupManager {
   }
 
   setupEventListeners() {
-    // Enable/disable toggle
     document.getElementById("enabledToggle").addEventListener("change", (e) => {
       this.updateSetting("enabled", e.target.checked);
     });
 
-    // Mode selection
     document.getElementById("habitMode").addEventListener("click", () => {
       this.updateSetting("mode", "habit");
     });
@@ -43,7 +38,6 @@ class PopupManager {
       this.updateSetting("mode", "advanced");
     });
 
-    // Position selection
     document.getElementById("topPosition").addEventListener("click", () => {
       this.updateSetting("position", "top");
     });
@@ -52,7 +46,6 @@ class PopupManager {
       this.updateSetting("position", "center");
     });
 
-    // Gemini API key handling
     document.getElementById("geminiApiKey").addEventListener("input", (e) => {
       this.updateSetting("geminiApiKey", e.target.value);
     });
@@ -61,9 +54,7 @@ class PopupManager {
       this.toggleApiKeyVisibility();
     });
 
-    // Other buttons
     document.getElementById("openShortcuts").addEventListener("click", () => {
-      // Firefox shortcuts are managed in about:addons
       browser.tabs.create({ url: "about:addons" });
     });
 
@@ -78,7 +69,6 @@ class PopupManager {
     await browser.storage.local.set({ [key]: value });
     this.updateUI();
 
-    // Notify content scripts of changes
     try {
       const [tab] = await browser.tabs.query({
         active: true,
@@ -96,15 +86,12 @@ class PopupManager {
   }
 
   updateUI() {
-    // Update toggle
     document.getElementById("enabledToggle").checked = this.settings.enabled;
 
-    // Update mode indicator
     const modeText =
       this.settings.mode === "habit" ? "Habit Mode" : "Advanced Mode";
     document.getElementById("modeIndicator").textContent = modeText;
 
-    // Update mode buttons
     document.querySelectorAll(".mode-btn").forEach((btn) => {
       btn.classList.remove("active");
     });
@@ -115,7 +102,6 @@ class PopupManager {
       document.getElementById("advancedMode").classList.add("active");
     }
 
-    // Update position buttons
     document.querySelectorAll(".position-btn").forEach((btn) => {
       btn.classList.remove("active");
     });
@@ -126,10 +112,8 @@ class PopupManager {
       document.getElementById("centerPosition").classList.add("active");
     }
 
-    // Update Gemini API key field
     document.getElementById("geminiApiKey").value = this.settings.geminiApiKey;
 
-    // Show/hide advanced settings
     const advancedSection = document.getElementById("advancedSettings");
     if (this.settings.mode === "advanced") {
       advancedSection.style.display = "block";
@@ -161,7 +145,6 @@ class PopupManager {
         const url = new URL(tab.url);
         document.getElementById("currentSite").textContent = url.hostname;
 
-        // Get input count from content script
         browser.tabs.sendMessage(
           tab.id,
           {
@@ -240,7 +223,6 @@ class PopupManager {
   }
 }
 
-// Initialize popup when DOM is ready
 document.addEventListener("DOMContentLoaded", () => {
   new PopupManager();
 });

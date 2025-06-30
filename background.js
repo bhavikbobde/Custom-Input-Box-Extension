@@ -1,21 +1,15 @@
-// Background script for Smart Input Box Firefox extension
-
-// Initialize extension
 browser.runtime.onInstalled.addListener(() => {
-  // Set default settings
   browser.storage.local.set({
-    mode: "habit", // 'habit' or 'advanced'
-    position: "top", // 'top' or 'center'
+    mode: "habit",
+    position: "top",
     enabled: true,
     geminiApiKey: "",
     siteSettings: {},
   });
 
-  // Update badge
   updateBadge("habit");
 });
 
-// Handle keyboard shortcuts
 browser.commands.onCommand.addListener(async (command) => {
   let tabs = await browser.tabs.query({ active: true, currentWindow: true });
   const tab = tabs[0];
@@ -33,7 +27,6 @@ browser.commands.onCommand.addListener(async (command) => {
   }
 });
 
-// Toggle between Habit and Advanced mode
 async function toggleMode(tabId) {
   const result = await browser.storage.local.get(["mode"]);
   const newMode = result.mode === "habit" ? "advanced" : "habit";
@@ -41,21 +34,18 @@ async function toggleMode(tabId) {
   await browser.storage.local.set({ mode: newMode });
   updateBadge(newMode);
 
-  // Notify content script
   browser.tabs.sendMessage(tabId, {
     action: "modeChanged",
     mode: newMode,
   });
 }
 
-// Toggle floating box visibility
 async function toggleFloatingBox(tabId) {
   browser.tabs.sendMessage(tabId, {
     action: "toggleFloatingBox",
   });
 }
 
-// Summarize inputs using Gemini
 async function summarizeInputs(tabId) {
   const result = await browser.storage.local.get(["geminiApiKey", "mode"]);
 
@@ -67,17 +57,15 @@ async function summarizeInputs(tabId) {
     return;
   }
 
-  // Get inputs from content script
   browser.tabs.sendMessage(tabId, {
     action: "getInputsForSummary",
   });
 }
 
-// Handle messages from content script
 browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
   if (request.action === "llmRequest") {
     handleGeminiRequest(request, sendResponse);
-    return true; // Keep message channel open for async response
+    return true;
   } else if (request.action === "summarizeText") {
     handleGeminiSummarizeRequest(request, sendResponse);
     return true;
@@ -86,7 +74,6 @@ browser.runtime.onMessage.addListener((request, sender, sendResponse) => {
   }
 });
 
-// Handle Gemini CSS generation request
 async function handleGeminiRequest(request, sendResponse) {
   const result = await browser.storage.local.get(["geminiApiKey"]);
 
@@ -149,7 +136,6 @@ ${request.html}`,
   }
 }
 
-// Handle text summarization request with Gemini
 async function handleGeminiSummarizeRequest(request, sendResponse) {
   const result = await browser.storage.local.get(["geminiApiKey"]);
 
@@ -206,19 +192,16 @@ ${request.text}`,
   }
 }
 
-// Update badge to show current mode
 function updateBadge(mode) {
   const text = mode === "habit" ? "H" : "A";
   const color = mode === "habit" ? "#4CAF50" : "#2196F3";
 
-  // Firefox uses browserAction
   if (browser.browserAction && browser.browserAction.setBadgeText) {
     browser.browserAction.setBadgeText({ text });
     browser.browserAction.setBadgeBackgroundColor({ color });
   }
 }
 
-// Update site-specific settings
 async function updateSiteSettings(url, settings) {
   const result = await browser.storage.local.get(["siteSettings"]);
   const siteSettings = result.siteSettings || {};

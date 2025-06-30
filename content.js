@@ -1,5 +1,3 @@
-// Content script for Smart Input Box Firefox extension
-
 class SmartInputBox {
   constructor() {
     this.floatingBox = null;
@@ -19,7 +17,6 @@ class SmartInputBox {
     try {
       console.log("Smart Input Box initializing...");
 
-      // Load settings
       await this.loadSettings();
       console.log("Settings loaded:", {
         enabled: this.isEnabled,
@@ -27,15 +24,12 @@ class SmartInputBox {
         position: this.position,
       });
 
-      // Set up input listeners
       this.setupInputListeners();
       console.log("Input listeners set up");
 
-      // Set up mutation observer for dynamic content
       this.setupMutationObserver();
       console.log("Mutation observer set up");
 
-      // Listen for messages from background script
       this.setupMessageListener();
       console.log("Message listener set up");
 
@@ -57,7 +51,6 @@ class SmartInputBox {
     this.mode = result.mode || "habit";
     this.position = result.position || "top";
 
-    // Load site-specific settings
     const siteSettings = result.siteSettings || {};
     const domain = window.location.hostname;
     if (siteSettings[domain]) {
@@ -66,7 +59,6 @@ class SmartInputBox {
   }
 
   setupInputListeners() {
-    // Use event delegation for better performance
     document.addEventListener("focusin", this.handleFocusIn.bind(this));
     document.addEventListener("focusout", this.handleFocusOut.bind(this));
     document.addEventListener("keydown", this.handleKeyDown.bind(this));
@@ -78,9 +70,7 @@ class SmartInputBox {
         if (mutation.type === "childList") {
           mutation.addedNodes.forEach((node) => {
             if (node.nodeType === Node.ELEMENT_NODE) {
-              // Check if new inputs were added
               const inputs = node.querySelectorAll("input, textarea");
-              // Observer is already set up via event delegation
             }
           });
         }
@@ -126,7 +116,6 @@ class SmartInputBox {
 
     console.log("Focus in:", target.tagName, target.type, target.className);
 
-    // Skip if it's our floating box elements
     if (target.closest(".smart-input-floating-box")) {
       console.log("Skipping focus - floating box element");
       return;
@@ -145,20 +134,17 @@ class SmartInputBox {
     console.log("Valid input focused, showing floating box");
     this.currentInput = target;
 
-    // Debounce to avoid multiple rapid calls
     clearTimeout(this.focusTimeout);
     this.focusTimeout = setTimeout(() => {
       this.showFloatingBox();
-    }, 50); // Increased debounce time
+    }, 50);
   }
 
   handleFocusOut(event) {
-    // Don't hide if focus moved to floating box
     if (this.floatingBox && this.floatingBox.contains(event.relatedTarget)) {
       return;
     }
 
-    // Don't hide if focus moved to another input
     if (event.relatedTarget && this.isInputElement(event.relatedTarget)) {
       return;
     }
@@ -167,7 +153,6 @@ class SmartInputBox {
     this.hideTimeout = setTimeout(() => {
       const activeElement = document.activeElement;
 
-      // Don't hide if an input is focused or floating box is focused
       if (
         activeElement &&
         (this.isInputElement(activeElement) ||
@@ -177,7 +162,7 @@ class SmartInputBox {
       }
 
       this.hideFloatingBox();
-    }, 100); // Increased timeout to prevent flickering
+    }, 100);
   }
 
   handleKeyDown(event) {
@@ -204,7 +189,6 @@ class SmartInputBox {
       return;
     }
 
-    // Don't create multiple boxes
     if (this.floatingBox) {
       console.log("Floating box already exists");
       return;
@@ -216,22 +200,22 @@ class SmartInputBox {
     this.floatingBox = this.createFloatingBox();
     document.body.appendChild(this.floatingBox);
 
-    // Focus the floating box
     const textArea = this.floatingBox.querySelector("textarea");
     const currentValue = this.getInputValue(this.currentInput);
-    textArea.value = currentValue;
 
-    console.log("Initial value:", currentValue);
+    // Clean up the value to remove extra whitespace
+    const cleanValue = currentValue.trim();
+    textArea.value = cleanValue;
 
-    // Small delay to ensure DOM is ready
+    console.log("Initial value:", cleanValue);
+
+    // Keep focus on original input, not the floating textarea
     setTimeout(() => {
-      textArea.focus();
-      textArea.setSelectionRange(textArea.value.length, textArea.value.length);
-      console.log("Floating box focused");
+      this.currentInput.focus();
+      console.log("Original input focused");
     }, 10);
 
-    // Set up two-way binding
-    this.setupTwoWayBinding(textArea);
+    this.setupOneWayBinding(textArea);
 
     const endTime = performance.now();
     console.log(`Floating box shown in ${endTime - startTime}ms`);
@@ -239,48 +223,90 @@ class SmartInputBox {
 
   createFloatingBox() {
     const box = document.createElement("div");
-    box.className = "smart-input-floating-box";
-    box.style.cssText = this.getFloatingBoxStyles();
-
-    const header = document.createElement("div");
-    header.className = "smart-input-header";
-    header.innerHTML = `
-      <span class="smart-input-title">Smart Input (${
-        this.mode === "habit" ? "Habit" : "Advanced"
-      })</span>
-      <div class="smart-input-controls">
-        ${
-          this.mode === "advanced"
-            ? '<button class="smart-input-btn" data-action="css">Fix CSS</button>'
-            : ""
-        }
-        <button class="smart-input-btn" data-action="position">Position</button>
-        <button class="smart-input-btn" data-action="close">×</button>
-      </div>
+    const overlay = document.createElement("div");
+    overlay.className = "smart-input-overlay";
+    overlay.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.3);
+      z-index: 2147483646;
     `;
+    overlay.appendChild(box);
+    box.className = `smart-input-floating-box ${
+      this.position === "center" ? "smart-input-center" : ""
+    }`;
+    box.style.cssText = this.getFloatingBoxStyles();
 
     const textArea = document.createElement("textarea");
     textArea.className = "smart-input-textarea";
-    textArea.placeholder = "Type here...";
+    textArea.placeholder = "This mirrors your original input...";
+    textArea.style.whiteSpace = "pre-wrap";
+    textArea.style.wordWrap = "break-word";
 
-    box.appendChild(header);
+    // Redirect focus back to original input when custom textarea is clicked
+    textArea.addEventListener("focus", () => {
+      this.currentInput.focus();
+    });
+
+    const controls = document.createElement("div");
+    controls.className = "smart-input-controls";
+    controls.innerHTML = `
+      <div class="smart-input-control-group">
+        <label class="smart-input-control-label">Mode</label>
+        <select class="smart-input-select" data-action="mode">
+          <option value="habit" ${
+            this.mode === "habit" ? "selected" : ""
+          }>Habit</option>
+          <option value="advanced" ${
+            this.mode === "advanced" ? "selected" : ""
+          }>Advanced</option>
+        </select>
+      </div>
+      <div class="smart-input-control-group">
+        <label class="smart-input-control-label">Position</label>
+        <select class="smart-input-select" data-action="position">
+          <option value="top" ${
+            this.position === "top" ? "selected" : ""
+          }>Top</option>
+          <option value="center" ${
+            this.position === "center" ? "selected" : ""
+          }>Center</option>
+        </select>
+      </div>
+      ${
+        this.mode === "advanced"
+          ? `<div class="smart-input-control-group">
+               <label class="smart-input-control-label">Action</label>
+               <select class="smart-input-select" data-action="css">
+                 <option value="">Fix CSS</option>
+               </select>
+             </div>`
+          : ""
+      }
+      <button class="smart-input-close-btn" data-action="close">×</button>
+    `;
+
     box.appendChild(textArea);
+    box.appendChild(controls);
 
-    // Add event listeners
-    header.addEventListener("click", this.handleHeaderClick.bind(this));
+    controls.addEventListener("change", this.handleControlChange.bind(this));
+    controls.addEventListener("click", this.handleControlClick.bind(this));
 
-    return box;
+    // Add click handler to overlay to close on outside click
+    overlay.addEventListener("click", (e) => {
+      if (e.target === overlay) {
+        this.hideFloatingBox();
+      }
+    });
+
+    return overlay;
   }
 
   getFloatingBoxStyles() {
     const baseStyles = `
-      position: fixed;
-      z-index: 9999999;
-      background: white;
-      border: 2px solid #2196F3;
-      border-radius: 8px;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
       min-width: 400px;
       max-width: 600px;
       width: 90vw;
@@ -307,70 +333,88 @@ class SmartInputBox {
     }
   }
 
-  setupTwoWayBinding(textArea) {
-    let lastValue = textArea.value;
+  setupOneWayBinding(textArea) {
+    let isSyncing = false;
 
-    // From floating box to original input
-    const syncToOriginal = () => {
-      if (textArea.value !== lastValue) {
-        this.setInputValue(this.currentInput, textArea.value);
-        lastValue = textArea.value;
-      }
-    };
-
-    // From original input to floating box
+    // Copy from original input to floating textarea ONLY
     const syncToFloating = () => {
+      if (isSyncing) return;
+      isSyncing = true;
       const currentValue = this.getInputValue(this.currentInput);
       if (currentValue !== textArea.value) {
+        const cursorPosition = textArea.selectionStart;
         textArea.value = currentValue;
-        lastValue = currentValue;
+        // Restore cursor position if possible
+        if (cursorPosition <= currentValue.length) {
+          textArea.setSelectionRange(cursorPosition, cursorPosition);
+        }
       }
+      isSyncing = false;
     };
 
-    // Debounced sync
-    textArea.addEventListener("input", () => {
-      clearTimeout(this.syncTimeout);
-      this.syncTimeout = setTimeout(syncToOriginal, 5);
-    });
-
-    // Monitor original input for external changes
-    this.originalInputListener = () => {
-      clearTimeout(this.syncTimeout);
-      this.syncTimeout = setTimeout(syncToFloating, 5);
-    };
-
+    // Listen to original input changes ONLY
+    this.originalInputListener = syncToFloating;
     this.currentInput.addEventListener("input", this.originalInputListener);
+
+    // Check for external changes periodically
+    this.syncInterval = setInterval(() => {
+      if (!isSyncing) {
+        const currentValue = this.getInputValue(this.currentInput);
+        if (currentValue !== textArea.value) {
+          syncToFloating();
+        }
+      }
+    }, 100);
   }
 
-  handleHeaderClick(event) {
+  handleControlChange(event) {
+    const action = event.target.getAttribute("data-action");
+    const value = event.target.value;
+
+    switch (action) {
+      case "mode":
+        this.mode = value;
+        browser.runtime.sendMessage({
+          action: "updateMode",
+          mode: value,
+        });
+        this.updateFloatingBox();
+        break;
+      case "position":
+        this.position = value;
+        browser.runtime.sendMessage({
+          action: "updateSiteSettings",
+          url: window.location.href,
+          settings: { position: value },
+        });
+        if (this.floatingBox) {
+          const box = this.floatingBox.querySelector(
+            ".smart-input-floating-box"
+          );
+          // Update position class
+          box.className = `smart-input-floating-box ${
+            value === "center" ? "smart-input-center" : ""
+          }`;
+          box.style.cssText = this.getFloatingBoxStyles();
+        }
+        break;
+      case "css":
+        if (this.mode === "advanced") {
+          this.applyCSSFix();
+          // Reset the select to show placeholder again
+          event.target.selectedIndex = 0;
+        }
+        break;
+    }
+  }
+
+  handleControlClick(event) {
     const action = event.target.getAttribute("data-action");
 
     switch (action) {
       case "close":
         this.hideFloatingBox();
         break;
-      case "position":
-        this.togglePosition();
-        break;
-      case "css":
-        this.applyCSSFix();
-        break;
-    }
-  }
-
-  togglePosition() {
-    this.position = this.position === "top" ? "center" : "top";
-
-    // Save site-specific preference
-    browser.runtime.sendMessage({
-      action: "updateSiteSettings",
-      url: window.location.href,
-      settings: { position: this.position },
-    });
-
-    // Update current floating box
-    if (this.floatingBox) {
-      this.floatingBox.style.cssText = this.getFloatingBoxStyles();
     }
   }
 
@@ -379,8 +423,7 @@ class SmartInputBox {
 
     this.showNotification("Generating CSS improvements with Gemini...", "info");
 
-    // Get page HTML (simplified)
-    const html = document.documentElement.outerHTML.substring(0, 10000); // Limit size
+    const html = document.documentElement.outerHTML.substring(0, 10000);
 
     browser.runtime.sendMessage(
       {
@@ -399,12 +442,10 @@ class SmartInputBox {
   }
 
   injectCSS(css) {
-    // Remove previous CSS
     if (this.appliedCSS) {
       this.appliedCSS.remove();
     }
 
-    // Inject new CSS
     this.appliedCSS = document.createElement("style");
     this.appliedCSS.textContent = css;
     this.appliedCSS.setAttribute("data-smart-input-css", "true");
@@ -421,21 +462,38 @@ class SmartInputBox {
 
   hideFloatingBox() {
     if (this.floatingBox) {
-      // Clean up listeners
-      if (this.currentInput && this.originalInputListener) {
-        this.currentInput.removeEventListener(
-          "input",
-          this.originalInputListener
-        );
-      }
+      const box = this.floatingBox.querySelector(".smart-input-floating-box");
+      const overlay = this.floatingBox;
 
-      // Clear any pending timeouts to prevent flickering
-      clearTimeout(this.focusTimeout);
-      clearTimeout(this.hideTimeout);
+      // Add closing animation
+      box.classList.add("smart-input-closing");
+      overlay.classList.add("smart-input-overlay-closing");
 
-      this.floatingBox.remove();
-      this.floatingBox = null;
-      this.originalInputListener = null;
+      // Wait for animation to complete before removing
+      setTimeout(() => {
+        // Clean up event listeners
+        if (this.currentInput && this.originalInputListener) {
+          this.currentInput.removeEventListener(
+            "input",
+            this.originalInputListener
+          );
+        }
+
+        // Clear intervals and timeouts
+        if (this.syncInterval) {
+          clearInterval(this.syncInterval);
+          this.syncInterval = null;
+        }
+
+        clearTimeout(this.focusTimeout);
+        clearTimeout(this.hideTimeout);
+
+        if (this.floatingBox) {
+          this.floatingBox.remove();
+          this.floatingBox = null;
+          this.originalInputListener = null;
+        }
+      }, 200); // Match the animation duration
     }
   }
 
@@ -453,11 +511,9 @@ class SmartInputBox {
 
     if (input.contentEditable === "true") {
       input.textContent = value;
-      // Trigger input event
       input.dispatchEvent(new Event("input", { bubbles: true }));
     } else {
       input.value = value;
-      // Trigger input event
       input.dispatchEvent(new Event("input", { bubbles: true }));
     }
   }
@@ -491,7 +547,6 @@ class SmartInputBox {
   }
 
   showSummaryPanel(summary) {
-    // Remove existing panel
     if (this.summaryPanel) {
       this.summaryPanel.remove();
     }
@@ -532,32 +587,45 @@ class SmartInputBox {
 
   updateFloatingBox() {
     if (this.floatingBox) {
-      const title = this.floatingBox.querySelector(".smart-input-title");
-      if (title) {
-        title.textContent = `Smart Input (${
-          this.mode === "habit" ? "Habit" : "Advanced"
-        })`;
+      const modeSelect = this.floatingBox.querySelector('[data-action="mode"]');
+      if (modeSelect) {
+        modeSelect.value = this.mode;
       }
 
-      // Update controls
+      const positionSelect = this.floatingBox.querySelector(
+        '[data-action="position"]'
+      );
+      if (positionSelect) {
+        positionSelect.value = this.position;
+      }
+
       const controls = this.floatingBox.querySelector(".smart-input-controls");
       if (controls) {
-        const cssBtn = controls.querySelector('[data-action="css"]');
-        if (this.mode === "advanced" && !cssBtn) {
-          const newBtn = document.createElement("button");
-          newBtn.className = "smart-input-btn";
-          newBtn.setAttribute("data-action", "css");
-          newBtn.textContent = "Fix CSS";
-          controls.insertBefore(newBtn, controls.firstChild);
-        } else if (this.mode === "habit" && cssBtn) {
-          cssBtn.remove();
+        const cssGroup = controls
+          .querySelector('[data-action="css"]')
+          ?.closest(".smart-input-control-group");
+
+        if (this.mode === "advanced" && !cssGroup) {
+          const newGroup = document.createElement("div");
+          newGroup.className = "smart-input-control-group";
+          newGroup.innerHTML = `
+            <label class="smart-input-control-label">Action</label>
+            <select class="smart-input-select" data-action="css">
+              <option value="">Fix CSS</option>
+            </select>
+          `;
+          controls.insertBefore(
+            newGroup,
+            controls.querySelector(".smart-input-close-btn")
+          );
+        } else if (this.mode === "habit" && cssGroup) {
+          cssGroup.remove();
         }
       }
     }
   }
 }
 
-// Initialize when DOM is ready - with better error handling
 (function initializeSmartInputBox() {
   console.log("DOM State:", document.readyState);
 
@@ -574,7 +642,6 @@ class SmartInputBox {
   } catch (error) {
     console.error("Failed to initialize Smart Input Box:", error);
 
-    // Retry after 1 second
     setTimeout(() => {
       console.log("Retrying initialization...");
       try {

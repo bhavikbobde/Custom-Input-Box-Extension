@@ -1,97 +1,200 @@
-/* Smart Input Box Extension Styles */
-
 .smart-input-floating-box {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, system-ui,
     sans-serif;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
   font-size: 14px;
   line-height: 1.4;
-  color: #333;
-  background: #fff;
-  border: 2px solid #2196f3;
-  border-radius: 12px;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
-  backdrop-filter: blur(10px);
+  color: #e0e0e0;
+  background: rgba(26, 26, 26, 0.75);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(8px);
   overflow: hidden;
-  animation: smartInputSlideIn 0.2s ease-out;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 2147483647;
+  animation: smartInputSlideIn 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  padding: 16px;
+}
+
+.smart-input-floating-box.smart-input-closing {
+  animation: smartInputSlideOut 0.2s cubic-bezier(0.55, 0.06, 0.68, 0.19)
+    forwards;
+}
+
+.smart-input-floating-box.smart-input-closing.smart-input-center {
+  animation: smartInputSlideOutCenter 0.2s cubic-bezier(0.55, 0.06, 0.68, 0.19)
+    forwards;
+}
+
+.smart-input-floating-box.smart-input-center {
+  animation: smartInputSlideInCenter 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 
 @keyframes smartInputSlideIn {
   from {
     opacity: 0;
-    transform: translateX(-50%) translateY(-10px);
+    transform: translateX(-50%) translateY(-30px) scale(0.95);
   }
   to {
     opacity: 1;
-    transform: translateX(-50%) translateY(0);
+    transform: translateX(-50%) translateY(0) scale(1);
   }
 }
 
-.smart-input-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 16px;
-  background: linear-gradient(135deg, #2196f3, #1976d2);
-  color: white;
-  font-weight: 600;
-  user-select: none;
+@keyframes smartInputSlideOut {
+  from {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-20px) scale(0.95);
+  }
 }
 
-.smart-input-title {
-  font-size: 14px;
-  font-weight: 600;
+@keyframes smartInputSlideInCenter {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes smartInputSlideOutCenter {
+  from {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.95);
+  }
 }
 
 .smart-input-controls {
   display: flex;
-  gap: 8px;
+  gap: 12px;
+  align-items: center;
+  justify-content: flex-start;
+  margin-top: 2px;
 }
 
-.smart-input-btn {
-  background: rgba(255, 255, 255, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  color: white;
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 12px;
+.smart-input-control-group {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 4px;
+}
+
+.smart-input-control-label {
+  font-size: 9px;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.smart-input-select {
+  background: rgba(26, 26, 26, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  color: #ccc;
+  padding: 3px 16px 3px 6px;
+  font-size: 10px;
   cursor: pointer;
+  outline: none;
+  min-width: 60px;
+  appearance: none;
+  background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 5"><path fill="%23888" d="M2 0L0 2h4zm0 5L0 3h4z"/></svg>');
+  background-repeat: no-repeat;
+  background-position: right 4px center;
+  background-size: 8px;
+  transition: all 0.15s ease;
+}
+
+.smart-input-select:hover {
+  background-color: rgba(26, 26, 26, 0.9);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.smart-input-select:focus {
+  border-color: rgba(255, 255, 255, 0.3);
+  background-color: rgba(26, 26, 26, 0.95);
+  background-image: url('data:image/svg+xml;charset=US-ASCII,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 4 5"><path fill="%23ccc" d="M2 5L0 3h4zm0 0L0 2h4z"/></svg>');
+}
+
+.smart-input-select option {
+  background: #1a1a1a;
+  color: #ccc;
+  padding: 4px;
+}
+
+.smart-input-close-btn {
+  background: transparent;
+  border: none;
+  color: #888;
+  padding: 3px;
+  cursor: pointer;
+  font-size: 16px;
   transition: all 0.2s ease;
+  margin-left: auto;
+  line-height: 1;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-.smart-input-btn:hover {
-  background: rgba(255, 255, 255, 0.3);
-  border-color: rgba(255, 255, 255, 0.5);
-}
-
-.smart-input-btn:active {
-  transform: scale(0.95);
+.smart-input-close-btn:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
 }
 
 .smart-input-textarea {
   width: 100%;
   min-height: 120px;
   max-height: 300px;
-  padding: 16px;
-  border: none;
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
   outline: none;
   resize: vertical;
+  background: rgba(255, 255, 255, 0.03);
   font-family: inherit;
   font-size: 14px;
   line-height: 1.5;
-  background: #fff;
   box-sizing: border-box;
+  color: #ccc;
+  margin-bottom: 4px;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  vertical-align: top;
+  cursor: pointer;
+}
+
+.smart-input-textarea:hover {
+  background: rgba(255, 255, 255, 0.05);
 }
 
 .smart-input-textarea:focus {
-  background: #fafafa;
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 .smart-input-textarea::placeholder {
-  color: #999;
+  color: #666;
   font-style: italic;
+  font-size: 13px;
 }
 
-/* Summary Panel */
 .smart-input-summary-panel {
   position: fixed;
   top: 20px;
@@ -155,7 +258,6 @@
   color: #333;
 }
 
-/* Notifications */
 .smart-input-notification {
   position: fixed;
   top: 20px;
@@ -185,7 +287,7 @@
 }
 
 .smart-input-notification.smart-input-info {
-  background: #2196f3;
+  background: #666;
 }
 
 .smart-input-notification.smart-input-success {
@@ -196,7 +298,32 @@
   background: #f44336;
 }
 
-/* Ensure floating box appears above everything */
+.smart-input-overlay {
+  animation: smartInputOverlayIn 0.25s ease-out;
+}
+
+.smart-input-overlay.smart-input-overlay-closing {
+  animation: smartInputOverlayOut 0.2s ease-in forwards;
+}
+
+@keyframes smartInputOverlayIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes smartInputOverlayOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
 .smart-input-floating-box,
 .smart-input-summary-panel,
 .smart-input-notification {
@@ -204,38 +331,8 @@
   z-index: 2147483647 !important;
 }
 
-/* Dark mode support */
-@media (prefers-color-scheme: dark) {
-  .smart-input-floating-box {
-    background: #1a1a1a;
-    border-color: #2196f3;
-    color: #e0e0e0;
-  }
+/* Dark mode styles are now the default */
 
-  .smart-input-textarea {
-    background: #1a1a1a;
-    color: #e0e0e0;
-  }
-
-  .smart-input-textarea:focus {
-    background: #2a2a2a;
-  }
-
-  .smart-input-textarea::placeholder {
-    color: #666;
-  }
-
-  .smart-input-summary-panel {
-    background: #1a1a1a;
-    color: #e0e0e0;
-  }
-
-  .smart-input-summary-content {
-    color: #e0e0e0;
-  }
-}
-
-/* Responsive design */
 @media (max-width: 600px) {
   .smart-input-floating-box {
     min-width: 320px;
@@ -249,11 +346,26 @@
   }
 
   .smart-input-controls {
-    gap: 4px;
+    gap: 8px;
   }
 
-  .smart-input-btn {
-    padding: 4px 6px;
-    font-size: 11px;
+  .smart-input-control-group {
+    gap: 3px;
+  }
+
+  .smart-input-select {
+    min-width: 50px;
+    font-size: 9px;
+    padding: 2px 12px 2px 4px;
+  }
+
+  .smart-input-control-label {
+    font-size: 8px;
+  }
+
+  .smart-input-close-btn {
+    font-size: 14px;
+    width: 18px;
+    height: 18px;
   }
 }
