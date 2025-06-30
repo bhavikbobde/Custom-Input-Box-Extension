@@ -1,183 +1,55 @@
-# Smart Input Box - Firefox Extension
+# Smart Input Box
 
-A focus-friendly typing experience that lets you interact with input fields through a floating textbox rather than scrolling to boxes anchored at the page bottom.
+Hello there! Thanks for checking out Smart Input Box. This is a browser extension I built to solve a personal frustration I've always had with web forms: small, awkwardly placed text boxes. My goal was to create a more comfortable and productive typing experience, no matter what website you're on.
+
+## What's the Big Idea?
+
+At its core, Smart Input Box gives you a spacious, floating text area whenever you click on an input field. Instead of being stuck with a tiny box, you get a clean, focused environment to write in.
+
+But it's more than just a bigger box. I've also integrated some AI-powered tools (using the Google Gemini API) to help with common web tasks, like fixing messy layouts and understanding complex forms.
 
 ## Features
 
-### 🎯 Core Features
-- **Floating Textbox**: Appears automatically when you focus on any input field
-- **Two-way Sync**: Real-time synchronization between floating box and original field
-- **Position Presets**: Choose between top bar or center popup layouts
-- **Site Memory**: Remembers your position preference for each website
+I've designed the extension to be simple and intuitive, with two main modes:
 
-### 🤖 Advanced Features (AI-Powered by Google Gemini)
-- **CSS Layout Improvements**: AI analyzes the page and suggests CSS tweaks for better readability
-- **Text Summarization**: Automatically summarize long text inputs
-- **Smart Context**: Understands page content to provide relevant suggestions
+### Habit Mode
 
-### ⚡ Performance
-- **<5ms Latency**: Lightning-fast text synchronization
-- **<300ms CSS Injection**: Quick layout improvements
-- **Memory Efficient**: Minimal resource usage
+This is the default mode, designed to seamlessly fit into your daily browsing.
 
-## Installation
+*   **Floating Textbox**: When you click on an input field, a larger textbox appears.
+*   **Live Sync**: Whatever you type in the floating box is instantly updated in the original field.
+*   **Custom Positioning**: You can choose to have the box appear at the top of the screen or right in the center. The extension will remember your preference for each site you visit.
 
-### From Browser Stores
-- **Firefox Add-ons**: Coming soon
+### Advanced Mode
 
-### Manual Installation (Development)
+For those who want a bit more power, Advanced Mode unlocks a few AI-powered features. You'll need a free Google Gemini API key to use these.
 
-1. Clone this repository
-2. Open Firefox and go to `about:debugging`
-3. Click "This Firefox"
-4. Click "Load Temporary Add-on"
-5. Select `manifest.json` from the project root folder
+*   **AI-Powered CSS Fixes**: Ever been on a site where the input fields are a total mess? This feature lets an AI analyze the page and apply some quick CSS changes to make things more usable.
+*   **AI Page Analysis**: If you're on a long or confusing form, this feature gives you a quick summary of what the page is asking for, so you can understand it at a glance.
 
-## Usage
+## How to Get Started
 
-### Basic Usage (Habit Mode)
-1. Click on any input field or textarea on any website
-2. A floating textbox will appear at the top of your screen
-3. Type in the floating box - it syncs automatically with the original field
-4. Press `Esc` or click outside to dismiss
+1.  **Install the Extension**: (I'll add a link here once it's on the Firefox Add-ons store)
+2.  **Click an Input Field**: Just navigate to any webpage and click on a text box or text area. The floating box should appear.
+3.  **Try Advanced Mode**:
+    *   Click on the extension icon in your browser's toolbar to open the settings popup.
+    *   Switch to "Advanced" mode.
+    *   You'll need a Google Gemini API key. There's a link in the settings that will take you to Google AI Studio where you can get one for free.
+    *   Once you've pasted your key, you'll see the AI feature buttons appear in the floating box.
 
-### Advanced Usage (AI Mode)
-1. Get a free Google Gemini API key from [Google AI Studio](https://aistudio.google.com/app/apikey)
-2. Enter your API key in the extension popup
-3. Switch to "Advanced" mode
-4. Use additional features:
-   - Click "Fix CSS" to improve page layout
-   - Press `Ctrl+Shift+S` to summarize long text inputs
+## A Note on Privacy
 
-## Keyboard Shortcuts
+Your privacy is important. Here's how your data is handled:
 
-| Shortcut | Action |
-|----------|--------|
-| `Ctrl+Shift+Y` | Toggle between Habit and Advanced mode |
-| `Ctrl+Shift+U` | Show/hide floating box |
-| `Ctrl+Shift+S` | Summarize inputs (Advanced mode only) |
-| `Esc` | Close floating box |
+*   Your Gemini API key is stored only on your computer, in your browser's local storage. It is only ever sent to Google's servers when you use an AI feature.
+*   The HTML content of the pages you visit is only sent to the Gemini API when you explicitly use an AI feature. It's never stored or logged anywhere.
 
-*Note: Shortcuts can be customized in Firefox's Add-ons Manager*
+## The Tech Stack
 
-## Configuration
-
-### Settings Panel
-Click the extension icon to access:
-- **Mode Selection**: Choose between Habit and Advanced modes
-- **Position**: Select top bar or center popup
-- **API Key**: Enter your Google Gemini API key for AI features
-- **Status**: View current site info and active inputs
-
-### Privacy & Security
-- API key stored securely in local browser storage
-- No data synced to external servers (except Google Gemini for AI features)
-- HTML content never permanently stored
-- All processing happens locally
-
-## API Key Setup (for Advanced Features)
-
-1. Visit [Google AI Studio](https://aistudio.google.com/app/apikey)
-2. Sign in with your Google account
-3. Click "Create API Key" and copy it
-4. Open the Smart Input Box settings
-5. Paste your API key in the "Google Gemini API Key" field
-6. Switch to "Advanced" mode to enable AI features
-
-**Note**: Gemini API is free with generous usage limits, making it more accessible than paid alternatives.
-
-## Technical Details
-
-### Architecture
-- **Manifest V2**: Firefox extension standards
-- **Content Script**: Handles DOM manipulation and input detection
-- **Background Script**: Manages API calls and shortcuts
-- **Popup Interface**: User-friendly settings panel
-
-### Compatibility
-- **Browser**: Firefox (all recent versions)
-- **Input Types**: Standard HTML input and textarea elements
-- **Dynamic Content**: Supports dynamically created inputs (via MutationObserver)
-- **Rich Text**: Compatible with contenteditable elements
-- **Websites**: Tested on major websites (Gmail, Reddit, YouTube, etc.)
-
-## Development
-
-### File Structure
-```
-smart-input-box/
-├── manifest.json          # Extension configuration
-├── background.js          # Service worker
-├── content.js            # Content script
-├── popup.html            # Settings UI
-├── popup.js              # Settings logic
-├── popup.css             # Settings styles
-├── styles.css            # Floating box styles
-├── icons/                # Extension icons
-└── README.md             # This file
-```
-
-### Building
-No build process required - this is a vanilla JavaScript Firefox extension.
-
-### Testing
-1. Load the extension in developer mode
-2. Test on various websites with different input types
-3. Verify keyboard shortcuts work
-4. Test AI features with valid API key
-
-## Troubleshooting
-
-### Common Issues
-
-**Floating box doesn't appear**
-- Check if the extension is enabled
-- Verify the website allows content scripts
-- Try refreshing the page
-
-**AI features not working**
-- Ensure you're in Advanced mode
-- Check that your API key is valid
-- Verify internet connection
-
-**Text not syncing**
-- Check browser console for errors
-- Some websites may block content scripts
-- Try disabling other extensions temporarily
-
-### Performance Tips
-- Use Habit mode for basic functionality and better performance
-- AI features require internet connection and API credits
-- Clear browser cache if experiencing issues
+For those interested, this extension is built with vanilla JavaScript, HTML, and CSS. It uses a content script to interact with web pages, a background script to handle API calls, and a simple popup for settings. No fancy frameworks, just plain old web tech.
 
 ## Contributing
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Test thoroughly
-5. Submit a pull request
+This is a personal project, but I'm always open to feedback and suggestions. If you have an idea for a new feature or find a bug, please feel free to open an issue on the GitHub repository.
 
-## License
-
-MIT License - see LICENSE file for details
-
-## Support
-
-- **GitHub Issues**: Report bugs and request features
-- **Email**: support@smartinputbox.com
-- **Documentation**: Visit our wiki for detailed guides
-
-## Changelog
-
-### v1.0.0 (Current)
-- Initial release
-- Basic floating textbox functionality
-- AI-powered CSS improvements
-- Text summarization
-- Keyboard shortcuts
-- Site-specific settings
-
----
-
-**Made with ❤️ for better web typing experiences** 
+Thanks again for trying out Smart Input Box. I hope you find it as useful as I do! 
